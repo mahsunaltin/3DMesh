@@ -1,7 +1,6 @@
 import subprocess
 import signal
 import webbrowser
-import os
 
 # Global variables to hold the subprocesses
 backend_process = None
