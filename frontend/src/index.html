@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome - 3D Mesh Visualization</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #007bff; /* Color for the header text */
+        }
+
+        /* Data Settings Styles */
+        #dataSettings {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        #dataSettings h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #333; /* Color for the header text */
+        }
+
+        #dataSettings input {
+            margin: 10px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(100% - 24px);
+        }
+
+        #fetchDataButton {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #fetchDataButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <h1>3D Mesh Visualization</h1>
+    </header>
+
+    <!-- Data Settings Section -->
+    <div id="dataSettings">
+        <!-- Data Settings Header -->
+        <h2>Create Synthetic Data</h2>
+
+        <!-- Number of Points Input -->
+        <label for="numPoints">Number of Points</label>
+        <input type="number" id="numPoints" placeholder="Enter number of points" value="100">
+
+        <!-- Scale Input -->
+        <label for="scale">Scale</label>
+        <input type="number" id="scale" placeholder="Enter scale" value="2">
+
+        <!-- Number of Frames Input -->
+        <label for="numFrames">Number of Frames</label>
+        <input type="number" id="numFrames" placeholder="Enter number of frames" value="100">
+
+        <!-- Fetch Data Button -->
+        <button id="fetchDataButton">Fetch Data</button>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        document.getElementById('fetchDataButton').addEventListener('click', () => {
+            const numPoints = document.getElementById('numPoints').value;
+            const scale = document.getElementById('scale').value;
+            const numFrames = document.getElementById('numFrames').value;
+
+            // Redirect to visualization.html with query parameters
+            window.location.href = `visualization.html?numPoints=${numPoints}&scale=${scale}&numFrames=${numFrames}`;
+        });
+    </script>
+</body>
+</html>
