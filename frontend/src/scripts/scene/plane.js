@@ -8,21 +8,21 @@ import * as THREE from 'three';
  * 
  * @returns {Object} An object containing the scene, camera, and renderer.
  */
-export function createPlanes(scene, planeSize) {
-    const divisions = 10;
-
-    // XY Plane (Green)
-    const xyPlane = new THREE.GridHelper(planeSize, divisions, 0x090B0B, 0x090B0B);
+export function createPlanes(scene, planeSize, divisions, color = 0x090B0B) {
+    // XY Plane
+    const xyPlane = new THREE.GridHelper(planeSize, divisions, color, color);
     xyPlane.rotation.x = Math.PI / 2;
     scene.add(xyPlane);
 
-    // YZ Plane (Red)
-    const yzPlane = new THREE.GridHelper(planeSize, divisions, 0x090B0B, 0x090B0B);
+    // YZ Plane
+    const yzPlane = new THREE.GridHelper(planeSize, divisions, color, color);
     yzPlane.rotation.y = Math.PI / 2;
     scene.add(yzPlane);
 
-    // ZX Plane (Blue)
-    const zxPlane = new THREE.GridHelper(planeSize, divisions, 0x090B0B, 0x090B0B);
+    // ZX Plane
+    const zxPlane = new THREE.GridHelper(planeSize, divisions, color, color);
     zxPlane.rotation.z = Math.PI / 2;
     scene.add(zxPlane);
+
+    return { xyPlane, yzPlane, zxPlane };
 }

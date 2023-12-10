@@ -8,11 +8,13 @@ import * as THREE from 'three';
  * 
  * @returns {Object} An object containing the scene, camera, and renderer.
  */
-export function createAxes(scene, axesSize) {
+export function createAxes(scene, axesSize, color = 0x090B0B) {
     // Create axes materials
-    const xAxisMaterial = new THREE.LineBasicMaterial({ color: 0x090B0B });
-    const yAxisMaterial = new THREE.LineBasicMaterial({ color: 0x090B0B });
-    const zAxisMaterial = new THREE.LineBasicMaterial({ color: 0x090B0B });
+    const axesMaterialOptions = { color: color, transparent: true };
+
+    const xAxisMaterial = new THREE.LineBasicMaterial(axesMaterialOptions);
+    const yAxisMaterial = new THREE.LineBasicMaterial(axesMaterialOptions);
+    const zAxisMaterial = new THREE.LineBasicMaterial(axesMaterialOptions);
 
     // X Axis
     const xAxisGeometry = new THREE.BufferGeometry().setFromPoints([
@@ -38,37 +40,44 @@ export function createAxes(scene, axesSize) {
     const zAxis = new THREE.Line(zAxisGeometry, zAxisMaterial);
     scene.add(zAxis);
 
-    // Labeling the Axes
+    // Collect all label objects
+    const labels = [];
     for (let i = -axesSize; i <= axesSize; i++) {
         if (i !== 0) {
-            // Create and position labels on the X, Y, and Z axes
-            const labelX = createTextLabel(i.toString(), new THREE.Vector3(i, 0, 0));
-            scene.add(labelX);
-
-            const labelY = createTextLabel(i.toString(), new THREE.Vector3(0, i, 0));
-            scene.add(labelY);
-
-            const labelZ = createTextLabel(i.toString(), new THREE.Vector3(0, 0, i));
-            scene.add(labelZ);
+            labels.push(createTextLabel(i.toString(), new THREE.Vector3(i, 0, 0), color));
+            labels.push(createTextLabel(i.toString(), new THREE.Vector3(0, i, 0), color));
+            labels.push(createTextLabel(i.toString(), new THREE.Vector3(0, 0, i), color));
         }
     }
+
+    // Add labels to the scene
+    labels.forEach(label => scene.add(label));
+
+
+    return {
+        xAxis: xAxis, 
+        yAxis: yAxis, 
+        zAxis: zAxis,
+        labels: labels
+    };
+
 }
 
 // Function to create a text label
-function createTextLabel(text, position) {
+function createTextLabel(text, position, color) {
     const canvas = document.createElement('canvas');
     const size = 64; // Size of the canvas (64x64)
     canvas.width = size;
     canvas.height = size;
 
     const context = canvas.getContext('2d');
-    context.fillStyle = '#000'; // Text color
+    context.fillStyle = color; // Text color
     context.textAlign = 'center';
     context.font = '24px Times New Roman';
     context.fillText(text, size / 2, size / 2 + 10);
 
     const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({ map: texture });
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
     const sprite = new THREE.Sprite(material);
     sprite.scale.set(0.5, 0.5, 0.5); // Adjust sprite size
     sprite.position.copy(position);

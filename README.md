@@ -65,13 +65,13 @@ Here's what we're excited about adding next:
 - [x] Convex Hull Creation 📊
 - [x] Interactive 3D Controls 📊
 - [x] Playback Functionality 📊
+- [x] Export Options for PNG, JPEG. 📤
+- [x] Enhanced Control Panel for Planes and Axes 🎛️
+- [x] Optimized Mobile and Desktop Experience 📱💻
+- [x] Advanced Interaction Tools (Pan, Zoom, Controllers) 🛠️
 - [ ] Import Options for CSV and Excel Files 📥
-- [ ] Export Options for PNG, GIFs, etc. 📤
+- [ ] Export Options for GIFs. 📤
 - [ ] Graph Legends for Clarity 📊
-- [ ] Enhanced Control Panel for Planes and Axes 🎛️
-- [ ] Optimized Mobile and Desktop Experience 📱💻
-- [ ] Advanced Interaction Tools (Pan, Zoom, Controllers) 🛠️
-
 
 ## Connect with Us 🌍
 

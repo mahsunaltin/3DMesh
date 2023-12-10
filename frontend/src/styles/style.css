@@ -1,11 +1,12 @@
 body {
     margin: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'TIMES NEW ROMAN', Times, serif;
+    font-size: small;
     background-color: #f4f4f4;
 }
 
 canvas {
-    display: block;
+    display: flex;
 }
 
 #loadingScreen {
@@ -19,9 +20,8 @@ canvas {
     justify-content: center;
     align-items: center;
     z-index: 100;
-    font-size: 2em;
     color: white;
-    overflow: hidden; /* Ensure no overflow */
+    overflow: hidden;
 }
 
 #loadingCircle {
@@ -43,18 +43,38 @@ canvas {
     }
 }
 
+#controls-right {
+    position: fixed;
+    top: 50%;
+    right: 1%;
+    transform: translateY(-50%);
+
+    width: 150px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+    border: 1px solid #cccccc;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 #controls {
     position: fixed;
     top: 50%;
     left: 1%;
     transform: translateY(-50%);
 
-    width: 200px;
+    width: 150px;
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 24px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
     z-index: 10;
+    border: 1px solid #cccccc;
 
     display: flex;
     flex-direction: column;
@@ -62,10 +82,10 @@ canvas {
 }
 
 .control-section {
-    padding: 10px;
+    padding: 4px;
     width: 100%;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 4px;
+    margin-bottom: 4px;
     text-align: center;
 }
 
@@ -91,7 +111,7 @@ canvas {
     width: 30px;
     padding: 0;
     vertical-align: middle;
-    border-radius: 50%; /* Added this line to make it circular */
+    border-radius: 50%;
 }
 
 .control-section input[type=checkbox] {
@@ -101,14 +121,14 @@ canvas {
 details {
     cursor: pointer;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #dddddd;
     margin-bottom: 5px;
 }
 
 summary {
-    font-size: 18px;
+    font-size: 1.1em;
     font-weight: bold;
-    padding: 5px;
+    padding: 0px;
 }
 
 button {
@@ -139,13 +159,11 @@ button:hover {
     background-color: #0056b3;
 }
 
-
-
 .control-section-speed {
     position: fixed;
-    bottom: 2%; /* Distance from the bottom of the viewport */
-    left: 50%; /* Set left to 50% of the viewport width */
-    transform: translateX(-50%); /* Shift leftwards by half its own width */
+    bottom: 2%; 
+    left: 50%; 
+    transform: translateX(-50%);
 
     height: 8px;
 
@@ -237,8 +255,6 @@ input:checked + .slider:before {
     user-select: none;
 }
 
-/* Your existing styles */
-
 #timeBarContainer {
     height: 16px;
     width: 20%;
@@ -247,8 +263,8 @@ input:checked + .slider:before {
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 15px;
-    border-radius: 8px;
+    padding: 8px;
+    border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 10;
     align-items: flex-end;
@@ -256,18 +272,61 @@ input:checked + .slider:before {
 
 #timeBar {
     height: 100%;
-    width: 100%; /* Set width to 100% to fill the container */
-    background-color: #4CAF50; /* Green fill color */
-    border-radius: 5px;
+    width: 100%; 
+    background-color: #4CAF50;
+    border: 1px solid #333;
+    border-radius: 3px;
 }
 
 #timeBarText {
-    margin: 24px;
-    text-align: center; /* Center the text */
+    margin: 12px;
+    text-align: center; 
     background-color: rgba(255, 255, 255, 0.9);
-    padding: 8px;
-    border-radius: 8px;
+    padding: 6px;
+    border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 11;
 }
 
+#export-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+}
+
+#export-button img {
+    width: 30px; /* Adjust as needed */
+    height: auto;
+    align-items: center;
+    cursor: pointer;
+    margin: 4px;
+    padding: 4px;
+}
+
+#export-options {
+    list-style: none;
+    margin-left: 6px;
+    padding: 4px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+    align-items: center;
+}
+
+#export-options li button {
+    margin: 4px;
+    width: auto;
+    text-align: center;
+    border: none;
+    background-color: #4CAF50;
+    cursor: pointer;
+}
+
+#export-options li button:hover {
+    background-color: #0056b3;
+}
+
+.hidden {
+    display: none;
+}

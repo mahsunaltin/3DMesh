@@ -21,10 +21,9 @@
         <span id="modeText">Light Mode</span>
     </div>
     
-    
+
 
     <div id="controls">
-
         <details class="control-section">
             <summary>Inner Points</summary>
             <label>Size: <input type="range" id="innerSize" min="0.001" max="0.1" step="0.01" value="0.025"></label>
@@ -48,10 +47,37 @@
     
         <details class="control-section">
             <summary>Edges</summary>
-            <label>Color: <input type="color" id="edgeColorPicker" value="#090B0B"></label>
             <label>Opacity: <input type="range" id="edgeOpacitySlider" min="0" max="1" step="0.01" value="1"></label>
+            <label>Color: <input type="color" id="edgeColorPicker" value="#090B0B"></label>
+            <label>Visible: <input type="checkbox" id="edgeVisible" checked></label>
         </details>
     </div>
+
+
+
+    <div id="controls-right">
+        <details class="control-section">
+            <summary>Axes</summary>
+            <label>Color: <input type="color" id="axesColorPicker" value="#090B0B"></label>
+            <label>Visible: <input type="checkbox" id="axesVisible" checked></label>
+        </details>
+        
+        <details class="control-section">
+            <summary>Grid Helpers</summary>
+            <label>Color: <input type="color" id="gridHelpersColorPicker" value="#090B0B"></label>
+            <label>Visible: <input type="checkbox" id="gridHelpersVisible" checked></label>
+        </details>
+    </div>
+
+    <div id="export-container">
+        <button id="export-button">Export</button>
+        <ul id="export-options" class="hidden">
+            <li><button id="export-jpeg">Export as JPEG</button></li>
+            <li><button id="export-png">Export as PNG</button></li>
+            <!-- Additional formats can be added here -->
+        </ul>
+    </div>
+    
     
     <div class="control-section-speed">
         <label class="speed-label">Speed: </label>

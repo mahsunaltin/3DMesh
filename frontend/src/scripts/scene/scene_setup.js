@@ -6,7 +6,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
  * 
  * @returns {Object} An object containing the scene, camera, and renderer.
  */
-export function createScene() {
+export function createScene(postion_of_camera) {
     // Create a new THREE.js scene
     const scene = new THREE.Scene();
 
@@ -19,9 +19,9 @@ export function createScene() {
     );
 
     // Position the camera
-    camera.position.x = 5;
-    camera.position.y = 5;
-    camera.position.z = 5;
+    camera.position.x = postion_of_camera;
+    camera.position.y = postion_of_camera;
+    camera.position.z = postion_of_camera;
 
     // Create the WebGL renderer and set its size
     const renderer = new THREE.WebGLRenderer();

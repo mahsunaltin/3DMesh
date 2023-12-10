@@ -73,6 +73,9 @@ export function setupControls(innerPointsGroup, outerPointsGroup, facesGroup, ed
     document.getElementById('edgeOpacitySlider').addEventListener('input', (event) => {
         updateEdgeOpacity(edgesGroup, parseFloat(event.target.value));
     });
+    document.getElementById('edgeVisible').addEventListener('change', (event) => {
+        edgesGroup.visible = event.target.checked;
+    });
 }
 
 /********************  Inner Points Functions  ********************/

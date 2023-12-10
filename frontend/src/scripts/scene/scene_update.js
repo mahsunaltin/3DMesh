@@ -8,6 +8,7 @@ import {
     edgeColor, edgeOpacity
 } from './../controls/controls_setup.js';
 import { innerPointsGroup, outerPointsGroup, facesGroup, edgesGroup } from './../main.js';
+import { camera, renderer } from './../main.js';
 
 // Update the scene with new data
 export function updateScene(frameData) {
@@ -17,8 +18,8 @@ export function updateScene(frameData) {
     clearGroup(edgesGroup);
 
     // Apply distinct settings for inner and outer points
-    addSpheres(frameData.blue_points, innerPointColor, innerPointSize, innerPointsGroup);
-    addSpheres(frameData.red_points, outerPointColor, outerPointSize, outerPointsGroup);
+    addSpheres(frameData.inner_points, innerPointColor, innerPointSize, innerPointsGroup);
+    addSpheres(frameData.outermost_points, outerPointColor, outerPointSize, outerPointsGroup);
     addFaces(frameData.faces, faceColor, faceOpacity, facesGroup);
     addEdges(frameData.faces, edgeColor, edgeOpacity, edgesGroup);
 }
@@ -28,4 +29,14 @@ function clearGroup(group) {
     while (group.children.length > 0) {
         group.remove(group.children[0]);
     }
+}
+
+//Handles the window resize event.
+export function onWindowResize() {
+    // Update the camera aspect ratio
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    // Update the renderer size
+    renderer.setSize(window.innerWidth, window.innerHeight);
 }

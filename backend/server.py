@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from backend.src.utils.calculate_data import calculate_data
-from backend.src.utils.synthetic_data_generator import generate_points_data
+from backend.src.utils.synthetic_data_generator import generate_points_data, generate_synthetic_time_series
 
 app = FastAPI()
 
@@ -29,5 +29,6 @@ class PointsRequest(BaseModel):
 @app.post("/generate_points")
 async def generate_points(request: PointsRequest):
     frames_data = [generate_points_data(request.num_points, request.scale) for _ in range(request.num_frames)]
+    #frames_data = generate_synthetic_time_series(request.num_frames, request.num_points)
     data = [calculate_data(points) for points in frames_data]
     return JSONResponse(content=jsonable_encoder(data))

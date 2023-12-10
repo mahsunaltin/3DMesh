@@ -11,16 +11,16 @@ def calculate_data(points):
     faces_simplified = f.simplify()
 
     # Convert NumPy arrays to lists for JSON serialization
-    blue_points = points.tolist()  # All points
-    red_points = hull.points[hull.vertices, :].tolist()  # Vertices of the convex hull
+    inner_points = points.tolist()  # All points
+    outermost_points = hull.points[hull.vertices, :].tolist()  # Vertices of the convex hull
 
-    # Filter out red points from blue points
-    blue_points = [p for p in blue_points if p not in red_points]
+    # Filter out outermost points from inner points
+    inner_points = [p for p in inner_points if p not in outermost_points]
 
     # Prepare JSON data
     data = {
-        "blue_points": blue_points,
-        "red_points": red_points,
+        "inner_points": inner_points,
+        "outermost_points": outermost_points,
         "faces": [np.array(face).tolist() for face in faces_simplified]
     }
     return data

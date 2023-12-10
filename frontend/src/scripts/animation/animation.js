@@ -31,6 +31,9 @@ export function animate() {
     // Update the label
     const label = document.getElementById('label');
 
+
+    // ***** IF ELSE STATEMENT FOR LABEL -- START *****
+
     // If there is an intersection, display the label
     if (intersectsInner.length > 0 || intersectsOuter.length > 0) {
         // Use the first intersected object from either group
@@ -56,6 +59,10 @@ export function animate() {
         label.style.display = 'none';
     }
 
+    // ***** IF ELSE STATEMENT FOR LABEL -- END *****
+
+    // ***** IF ELSE STATEMENT FOR ANIMATION -- START *****
+
     // Update the scene if animation is playing
     if (isAnimating) {
         const currentTime = Date.now();
@@ -67,6 +74,8 @@ export function animate() {
             lastFrameTime = currentTime;
         }
     }
+
+    // ***** IF ELSE STATEMENT FOR ANIMATION -- END *****
 
     // Render the scene
     renderer.render(scene, camera);
