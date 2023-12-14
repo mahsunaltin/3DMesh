@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import '../styles/style.css';
 
 import { setupControls, updateFaceColor, updateFaceOpacity,  updateEdgeColor, updateEdgeOpacity, updateInnerPointColor, updateOuterPointColor, updateInnerPointSize, updateOuterPointSize } from './controls/controls_setup.js';
-import { fetchData, findOutermostPoint, findLargestAbsoluteCoordinate } from './data/fetch_data.js';
+import { findOutermostPoint, findLargestAbsoluteCoordinate, fetchAnimatedScaledSphere, fetchCustomScaledHollowSphere, fetchRandomScaledPoints, fetchTimeSeriesNoiseAnomalies } from './data/fetch_data.js';
 import { createScene, addOrbitControls } from './scene/scene_setup.js';
 import { setupPlaybackControls } from './controls/playback_controls.js'; 
 import { onDocumentMouseMove } from './controls/mouse_controls.js'; 
@@ -41,11 +41,51 @@ let planeColor = 0xD1D1D1;
 
 // Main function
 async function main() {
+
+    // Fetch data
     const urlParams = new URLSearchParams(window.location.search);
-    const numPoints = parseInt(urlParams.get('numPoints'), 10);
-    const scale = parseInt(urlParams.get('scale'), 10);
-    const numFrames = parseInt(urlParams.get('numFrames'), 10);
-    framesData = await fetchData(numPoints, scale, numFrames);
+    const scenario = urlParams.get('scenario');
+
+    // Fetch data based on scenario
+    switch (scenario) {
+        case '1':
+            const numPoints = parseInt(urlParams.get('numPoints'), 10);
+            const scale = parseInt(urlParams.get('scale'), 10);
+            const numFrames = parseInt(urlParams.get('numFrames'), 10);
+            framesData = await fetchRandomScaledPoints(numPoints, scale, numFrames);
+            break;
+
+        case '2':
+            const numFrames2 = parseInt(urlParams.get('numFrames'), 10);
+            const numPointsPerFrame = parseInt(urlParams.get('numPointsPerFrame'), 10);
+            const noiseLevel = parseFloat(urlParams.get('noiseLevel'));
+            const anomalyLevel = parseFloat(urlParams.get('anomalyLevel'));
+            framesData = await fetchTimeSeriesNoiseAnomalies(numFrames2, numPointsPerFrame, noiseLevel, anomalyLevel);
+            break;
+
+        case '3':
+            const numPoints3 = parseInt(urlParams.get('numPoints'), 10);
+            const numFrames3 = parseInt(urlParams.get('numFrames'), 10);
+            const numCycles = parseInt(urlParams.get('numCycles'), 10);
+            const scaleMin = parseFloat(urlParams.get('scaleMin'));
+            const scaleMax = parseFloat(urlParams.get('scaleMax'));
+            console.log("scaleMin: ", scaleMin);
+            framesData = await fetchAnimatedScaledSphere(numPoints3, numFrames3, numCycles, scaleMin, scaleMax);
+            break;
+
+        case '4':
+            const numPoints4 = parseInt(urlParams.get('numPoints'), 10);
+            const numFrames4 = parseInt(urlParams.get('numFrames'), 10);
+            const numCycles4 = parseInt(urlParams.get('numCycles'), 10);
+            const scaleMin4 = parseFloat(urlParams.get('scaleMin'));
+            const scaleMax4 = parseFloat(urlParams.get('scaleMax'));
+            framesData = await fetchCustomScaledHollowSphere(numPoints4, numFrames4, numCycles4, scaleMin4, scaleMax4);
+            break;
+
+        default:
+            console.error('Invalid scenario');
+            return null;
+    }
 
     // Find the outermost point and largest absolute coordinate
     outermostPoint = findOutermostPoint(framesData);
@@ -75,7 +115,7 @@ async function main() {
         // Attach the event listener
         window.addEventListener('resize', onWindowResize, false);
 
-        // Export to image event listener
+        // Export to image event listener based on format
         document.getElementById('export-button').addEventListener('click', function() {
             document.getElementById('export-options').classList.toggle('hidden');
         });
@@ -113,6 +153,10 @@ function init(frameData) {
 
     // Add event listener for mode switch
     document.getElementById('modeSwitch').addEventListener('click', switchBackgroundColor);
+
+    // Initialize the colors of the circles in the legend
+    document.getElementById('outerColorCircle').style.backgroundColor = document.getElementById('outerColor').value;
+    document.getElementById('innerColorCircle').style.backgroundColor = document.getElementById('innerColor').value;
 
     /*************************************************/
     /********** ADD AXES AND PLANES - START **********/

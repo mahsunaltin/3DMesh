@@ -18,52 +18,156 @@
         header {
             margin-bottom: 30px;
             text-align: center;
-            color: #333;
         }
 
         header h1 {
             margin: 0;
             font-size: 2.5em;
-            color: #007bff; /* Color for the header text */
+            color: #007bff;
         }
 
         /* Data Settings Styles */
         #dataSettings {
-            background-color: #ffffff;
+            background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            text-align: center;
+            width: 80%;
+            max-width: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         #dataSettings h2 {
             margin-bottom: 15px;
             font-size: 1.5em;
-            color: #333; /* Color for the header text */
+            color: #333;
         }
 
-        #dataSettings input {
+        /* Scenario Selector Styles */
+        .collapsible {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .collapsible:hover, .collapsible.active {
+            background-color: #4CAF50;
+        }
+
+        /* Collapsible Content Styles */
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            background-color: #f1f1f1;
+            transition: max-height 0.2s ease-out;
+            border-radius: 5px;
+            margin: 8px;
+            border: 1px solid #ddd;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content input {
             margin: 10px;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            justify-content: center;
+            align-items: center;
             width: calc(100% - 24px);
         }
 
-        #fetchDataButton {
+        /* Button Styles */
+        button {
             background-color: #007bff;
             color: white;
             padding: 10px 15px;
-            border: none;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin-top: 10px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
         }
 
-        #fetchDataButton:hover {
-            background-color: #0056b3;
+        button:hover {
+            background-color: red;
         }
+
+        /* Input Group Styles */
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        label {
+            text-align: left;
+            margin-right: 4px;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Scenario Selector Styles */
+        #scenarioSelector {
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            justify-content: center;
+            align-items: center;
+            margin: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #scenarioSelector:focus {
+            border: 1px solid #007bff;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Button Content Styles */
+        #dataSettings {
+            width: 80%;
+            max-width: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #buttonContent {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
     </style>
 </head>
 <body>
@@ -75,35 +179,206 @@
 
     <!-- Data Settings Section -->
     <div id="dataSettings">
-        <!-- Data Settings Header -->
         <h2>Create Synthetic Data</h2>
 
-        <!-- Number of Points Input -->
-        <label for="numPoints">Number of Points</label>
-        <input type="number" id="numPoints" placeholder="Enter number of points" value="100">
+        <!-- Dropdown for Scenario Selection -->
+        <select id="scenarioSelector">
+            <option value="">Select a Scenario</option>
+            <option value="1">Scaled Point Cloud</option>
+            <option value="2">Scaled Point Cloud with Defined Anomalies</option>
+            <option value="3">Scaled Filled Sphere Point Cloud with Sinusoidal Wave</option>
+            <option value="4">Scaled Hollow Sphere Point Cloud with Sinusoidal Wave</option>
+        </select>
 
-        <!-- Scale Input -->
-        <label for="scale">Scale</label>
-        <input type="number" id="scale" placeholder="Enter scale" value="2">
-
-        <!-- Number of Frames Input -->
-        <label for="numFrames">Number of Frames</label>
-        <input type="number" id="numFrames" placeholder="Enter number of frames" value="100">
-
-        <!-- Fetch Data Button -->
-        <button id="fetchDataButton">Fetch Data</button>
+        <!-- Scenario Content will be injected here -->
+        <div id="scenarioContent"></div>
     </div>
 
     <!-- JavaScript Section -->
     <script>
-        document.getElementById('fetchDataButton').addEventListener('click', () => {
-            const numPoints = document.getElementById('numPoints').value;
-            const scale = document.getElementById('scale').value;
-            const numFrames = document.getElementById('numFrames').value;
+        
+        // Add event listener to the scenario selector
+        document.getElementById('scenarioSelector').addEventListener('change', function() {
+            const scenario = this.value;
+            const contentDiv = document.getElementById('scenarioContent');
+            contentDiv.innerHTML = ''; // Clear previous content
 
-            // Redirect to visualization.html with query parameters
-            window.location.href = `visualization.html?numPoints=${numPoints}&scale=${scale}&numFrames=${numFrames}`;
+            if (scenario) {
+                // Fetch and display the appropriate scenario inputs
+                displayScenarioInputs(scenario, contentDiv);
+            }
         });
+        
+        // Function to display the appropriate scenario inputs
+        function displayScenarioInputs(scenario, container) {
+            // HTML for each scenario's inputs
+            const scenarios = {
+                '1': `
+                    <!-- Inputs for Scenario 1 -->
+                    <div class="input-group">
+                        <label for="numPoints1">Number of Points: </label>
+                        <input id="numPoints1" type="number" value="500">
+                    </div>
+                    <div class="input-group">
+                        <label for="scale">Scale: </label>
+                        <input id="scale" type="number" value="1.0">
+                    </div>
+                    <div class="input-group">
+                        <label for="numFrames1">Number of Frames: </label>
+                        <input id="numFrames1" type="number" value="30">
+                    </div>
+
+                    <!-- Fetch Data Button -->
+                    <div id="buttonContent">
+                        <button id="fetchDataButtonScenario1">Fetch Data</button>
+                    </div>
+                `,
+                '2': `
+                    <!-- Inputs for Scenario 2 -->
+                    <div class="input-group">
+                        <label for="numPoints2">Number of Points: </label>
+                        <input id="numPoints2" type="number" value="500">
+                    </div>
+                    <div class="input-group">
+                        <label for="numFrames2">Number of Frames: </label>
+                        <input id="numFrames2" type="number" value="30">
+                    </div>
+                    <div class="input-group">
+                        <label for="noiseLevel">Noise Level: </label>
+                        <input id="noiseLevel" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="anomalyLevel">Anomaly Level: </label>
+                        <input id="anomalyLevel" type="number" value="0.1">
+                    </div>
+
+                    <!-- Fetch Data Button -->
+                    <div id="buttonContent">
+                        <button id="fetchDataButtonScenario2">Fetch Data</button>
+                    </div>
+                `,
+                '3': `
+                    <!-- Inputs for Scenario 3 -->
+                    <div class="input-group">
+                        <label for="numPoints3">Number of Points: </label>
+                        <input id="numPoints3" type="number" value="500">
+                    </div>
+                    <div class="input-group">
+                        <label for="numFrames3">Number of Frames: </label>
+                        <input id="numFrames3" type="number" value="30">
+                    </div>
+                    <div class="input-group">
+                        <label for="minScale1">Minimum Scale: </label>
+                        <input id="minScale1" type="number" value="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="maxScale1">Maximum Scale: </label>
+                        <input id="maxScale1" type="number" value="2.0">
+                    </div>
+                    <div class="input-group">
+                        <label for="numCycles1">Number of Cycles: </label>
+                        <input id="numCycles1" type="number" value="5">
+                    </div>
+
+                    <!-- Fetch Data Button -->
+                    <div id="buttonContent">
+                        <button id="fetchDataButtonScenario3">Fetch Data</button>
+                    </div>
+                `,
+                '4': `
+                    <!-- Inputs for Scenario 4 -->
+                    <div class="input-group">
+                        <label for="numPoints4">Number of Points: </label>
+                        <input id="numPoints4" type="number" value="300">
+                    </div>
+                    <div class="input-group">
+                        <label for="numFrames4">Number of Frames: </label>
+                        <input id="numFrames4" type="number" value="20">
+                    </div>
+                    <div class="input-group">
+                        <label for="minScale2">Minimum Scale: </label>
+                        <input id="minScale2" type="number" value="0.2">
+                    </div>
+                    <div class="input-group">
+                        <label for="maxScale2">Maximum Scale: </label>
+                        <input id="maxScale2" type="number" value="1.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="numCycles2">Number of Cycles: </label>
+                        <input id="numCycles2" type="number" value="3">
+                    </div>
+
+                    <!-- Fetch Data Button -->
+                    <div id="buttonContent">
+                        <button id="fetchDataButtonScenario4">Fetch Data</button>
+                    </div>
+                `
+            };
+
+            // Inject the relevant HTML into the container
+            container.innerHTML = scenarios[scenario];
+
+            // Scenario 1
+            const fetchDataButton = container.querySelector('#fetchDataButtonScenario1');
+            if (fetchDataButton) {
+                fetchDataButton.addEventListener('click', function() {
+                    // Fetch data logic for Scenario 1
+                    const numPoints = document.getElementById('numPoints1').value;
+                    const scale = document.getElementById('scale').value;
+                    const numFrames = document.getElementById('numFrames1').value;
+
+                    // Redirect to visualization.html with query parameters
+                    window.location.href = `visualization.html?scenario=1&numPoints=${numPoints}&scale=${scale}&numFrames=${numFrames}`;
+                });
+            }
+
+            // Scenario 2
+            const fetchDataButton2 = container.querySelector('#fetchDataButtonScenario2');
+            if (fetchDataButton2) {
+                fetchDataButton2.addEventListener('click', function() {
+                    // Fetch data logic for Scenario 2
+                    const numFrames = document.getElementById('numFrames2').value;
+                    const numPointsPerFrame = document.getElementById('numPoints2').value;
+                    const noiseLevel = document.getElementById('noiseLevel').value;
+                    const anomalyLevel = document.getElementById('anomalyLevel').value;
+
+                    // Redirect to visualization.html with query parameters
+                    window.location.href = `visualization.html?scenario=2&numFrames=${numFrames}&numPointsPerFrame=${numPointsPerFrame}&noiseLevel=${noiseLevel}&anomalyLevel=${anomalyLevel}`;
+                });
+            }
+
+            // Scenario 3
+            const fetchDataButton3 = container.querySelector('#fetchDataButtonScenario3');
+            if (fetchDataButton3) {
+                fetchDataButton3.addEventListener('click', function() {
+                    // Fetch data logic for Scenario 3
+                    const numPoints = document.getElementById('numPoints3').value;
+                    const numFrames = document.getElementById('numFrames3').value;
+                    const minScale = document.getElementById('minScale1').value;
+                    const maxScale = document.getElementById('maxScale1').value;
+                    const numCycles = document.getElementById('numCycles1').value;
+
+                    // Redirect to visualization.html with query parameters
+                    window.location.href = `visualization.html?scenario=3&numPoints=${numPoints}&numFrames=${numFrames}&scaleMin=${minScale}&scaleMax=${maxScale}&numCycles=${numCycles}`;
+                });
+            }
+
+            // Scenario 4
+            const fetchDataButton4 = container.querySelector('#fetchDataButtonScenario4');
+            if (fetchDataButton4) {
+                fetchDataButton4.addEventListener('click', function() {
+                    // Fetch data logic for Scenario 4
+                    const numPoints = document.getElementById('numPoints4').value;
+                    const numFrames = document.getElementById('numFrames4').value;
+                    const minScale = document.getElementById('minScale2').value;
+                    const maxScale = document.getElementById('maxScale2').value;
+                    const numCycles = document.getElementById('numCycles2').value;
+
+                    // Redirect to visualization.html with query parameters
+                    window.location.href = `visualization.html?scenario=4&numPoints=${numPoints}&numFrames=${numFrames}&scaleMin=${minScale}&scaleMax=${maxScale}&numCycles=${numCycles}`;
+                });
+            }
+        }
     </script>
 </body>
 </html>

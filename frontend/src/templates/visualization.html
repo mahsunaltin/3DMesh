@@ -4,10 +4,12 @@
     <title>3D Mesh Visualization</title>
 </head>
 <body>
+
     <div id="loadingScreen">
         <div id="loadingCircle"></div>
     </div>
 
+    
     <div id="timeBarContainer">
         <div id="timeBar"></div>
         <div id="timeBarText">Frame: 0 / 0</div>
@@ -99,5 +101,18 @@
                                 padding: 8px;
                                 border-radius: 0 10px 10px 10px; /* top-left, top-right, bottom-right, bottom-left */
                             "></div>
+
+
+    <div id="legend">
+        <div class="legend-item">
+            <div class="color-circle" id="outerColorCircle"></div>
+            <p>Outermost points</p>
+        </div>
+        <div class="legend-item">
+            <div class="color-circle" id="innerColorCircle"></div>
+            <p>Inner points</p>
+        </div>
+    </div>
+
 </body>
 </html>

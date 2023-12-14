@@ -39,6 +39,7 @@ export function setupControls(innerPointsGroup, outerPointsGroup, facesGroup, ed
     });
     document.getElementById('innerColor').addEventListener('input', (event) => {
         updateInnerPointColor(innerPointsGroup, event.target.value);
+        document.getElementById('innerColorCircle').style.backgroundColor = event.target.value;        
     });
     document.getElementById('innerVisible').addEventListener('change', (event) => {
         innerPointsGroup.visible = event.target.checked;
@@ -50,6 +51,7 @@ export function setupControls(innerPointsGroup, outerPointsGroup, facesGroup, ed
     });
     document.getElementById('outerColor').addEventListener('input', (event) => {
         updateOuterPointColor(outerPointsGroup, event.target.value);
+        document.getElementById('outerColorCircle').style.backgroundColor = event.target.value;
     });
     document.getElementById('outerVisible').addEventListener('change', (event) => {
         outerPointsGroup.visible = event.target.checked;
