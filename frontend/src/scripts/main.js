@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import '../styles/style.css';
 
-import { setupControls, updateFaceColor, updateFaceOpacity,  updateEdgeColor, updateEdgeOpacity, updateInnerPointColor, updateOuterPointColor, updateInnerPointSize, updateOuterPointSize } from './controls/controls_setup.js';
+import { setupControls, updateFaceColor, updateFaceOpacity,  updateEdgeColor, updateEdgeOpacity, updateInnerPointColor, updateOuterPointColor, updateAnomalyPointColor, updateInnerPointSize, updateOuterPointSize, updateAnomalyPointSize } from './controls/controls_setup.js';
 import { findOutermostPoint, findLargestAbsoluteCoordinate, fetchAnimatedScaledSphere, fetchCustomScaledHollowSphere, fetchRandomScaledPoints, fetchTimeSeriesNoiseAnomalies } from './data/fetch_data.js';
 import { createScene, addOrbitControls } from './scene/scene_setup.js';
 import { setupPlaybackControls } from './controls/playback_controls.js'; 
@@ -13,6 +13,7 @@ import { createAxes } from './scene/axes.js';
 import { createPlanes } from './scene/plane.js';
 import { handleTimeBarClick, updateProgressBar } from './controls/time_bar.js';
 import { exportToImage } from './controls/export.js';
+import { populateDropdown } from './controls/dropdown_points.js';
 
 // Global variables for scene
 export let scene, camera, renderer;
@@ -21,7 +22,7 @@ export let scene, camera, renderer;
 let postion_of_camera = 5;
 
 // Global variables for groups
-export let innerPointsGroup, outerPointsGroup, facesGroup, edgesGroup;
+export let innerPointsGroup, outerPointsGroup, anomalyGroupPoints, facesGroup, edgesGroup;
 
 // Variables for animation
 export let framesData = [];
@@ -58,9 +59,9 @@ async function main() {
         case '2':
             const numFrames2 = parseInt(urlParams.get('numFrames'), 10);
             const numPointsPerFrame = parseInt(urlParams.get('numPointsPerFrame'), 10);
-            const noiseLevel = parseFloat(urlParams.get('noiseLevel'));
+            const noiseLevel1 = parseFloat(urlParams.get('noiseLevel'));
             const anomalyLevel = parseFloat(urlParams.get('anomalyLevel'));
-            framesData = await fetchTimeSeriesNoiseAnomalies(numFrames2, numPointsPerFrame, noiseLevel, anomalyLevel);
+            framesData = await fetchTimeSeriesNoiseAnomalies(numFrames2, numPointsPerFrame, noiseLevel1, anomalyLevel);
             break;
 
         case '3':
@@ -69,8 +70,11 @@ async function main() {
             const numCycles = parseInt(urlParams.get('numCycles'), 10);
             const scaleMin = parseFloat(urlParams.get('scaleMin'));
             const scaleMax = parseFloat(urlParams.get('scaleMax'));
+            const noiseLevel2 = parseFloat(urlParams.get('noiseLevel'));
+            const anomalyPercentage1 = parseFloat(urlParams.get('anomalyPercentage'));
+            const distortionCoefficient1 = parseFloat(urlParams.get('distortionCoefficient'));
             console.log("scaleMin: ", scaleMin);
-            framesData = await fetchAnimatedScaledSphere(numPoints3, numFrames3, numCycles, scaleMin, scaleMax);
+            framesData = await fetchAnimatedScaledSphere(numPoints3, numFrames3, numCycles, scaleMin, scaleMax, noiseLevel2, anomalyPercentage1, distortionCoefficient1);
             break;
 
         case '4':
@@ -79,7 +83,10 @@ async function main() {
             const numCycles4 = parseInt(urlParams.get('numCycles'), 10);
             const scaleMin4 = parseFloat(urlParams.get('scaleMin'));
             const scaleMax4 = parseFloat(urlParams.get('scaleMax'));
-            framesData = await fetchCustomScaledHollowSphere(numPoints4, numFrames4, numCycles4, scaleMin4, scaleMax4);
+            const noiseLevel3 = parseFloat(urlParams.get('noiseLevel'));
+            const anomalyPercentage2 = parseFloat(urlParams.get('anomalyPercentage'));
+            const distortionCoefficient2 = parseFloat(urlParams.get('distortionCoefficient'));
+            framesData = await fetchCustomScaledHollowSphere(numPoints4, numFrames4, numCycles4, scaleMin4, scaleMax4, noiseLevel3, anomalyPercentage2, distortionCoefficient2);
             break;
 
         default:
@@ -102,6 +109,7 @@ async function main() {
     // Check if data was fetched successfully
     if (framesData && framesData.length > 0) {
         init(framesData[0]); // Initialize the scene
+        anomalyGroupPoints.visible = false; // Hide the anomaly points
         updateProgressBar(0, framesData.length); // Update the progress bar
         animate(); // Animate the scene
         setupPlaybackControls(playAnimation, pauseAnimation, setAnimationSpeed); // Setup playback controls
@@ -149,7 +157,7 @@ function init(frameData) {
     document.getElementById('container').appendChild(renderer.domElement);
 
     // Set background color
-    renderer.setClearColor(0xf4f4f4, 1);
+    renderer.setClearColor(0xFAFAFA, 1);
 
     // Add event listener for mode switch
     document.getElementById('modeSwitch').addEventListener('click', switchBackgroundColor);
@@ -157,6 +165,10 @@ function init(frameData) {
     // Initialize the colors of the circles in the legend
     document.getElementById('outerColorCircle').style.backgroundColor = document.getElementById('outerColor').value;
     document.getElementById('innerColorCircle').style.backgroundColor = document.getElementById('innerColor').value;
+    document.getElementById('anomalyColorCircle').style.backgroundColor = document.getElementById('anomalyColor').value;
+
+    // Fetch all points from the first frame
+    populateDropdown(frameData.all_points);
 
     /*************************************************/
     /********** ADD AXES AND PLANES - START **********/
@@ -222,6 +234,7 @@ function init(frameData) {
     // Add groups for inner and outer points
     innerPointsGroup = new THREE.Group();
     outerPointsGroup = new THREE.Group();
+    anomalyGroupPoints = new THREE.Group();
     
     // Add groups for faces and edges
     facesGroup = new THREE.Group();
@@ -231,6 +244,7 @@ function init(frameData) {
     updateScene(frameData);
     scene.add(innerPointsGroup);
     scene.add(outerPointsGroup);
+    scene.add(anomalyGroupPoints);
     scene.add(facesGroup);
     scene.add(edgesGroup);
 
@@ -238,6 +252,7 @@ function init(frameData) {
     setupControls(
         innerPointsGroup, 
         outerPointsGroup, 
+        anomalyGroupPoints,
         facesGroup, 
         edgesGroup, 
         {
@@ -245,6 +260,8 @@ function init(frameData) {
             updateInnerPointColor,
             updateOuterPointSize, 
             updateOuterPointColor,
+            updateAnomalyPointSize,
+            updateAnomalyPointColor,
             updateFaceColor,
             updateFaceOpacity, 
             updateEdgeColor, 

@@ -15,16 +15,16 @@ export async function fetchTimeSeriesNoiseAnomalies(numFrames, numPointsPerFrame
 }
 
 // Scenario 3: Fetch Animated Scaled Sphere Point Cloud
-export async function fetchAnimatedScaledSphere(numPoints, numFrames, numCycles, scaleMin, scaleMax) {
+export async function fetchAnimatedScaledSphere(numPoints, numFrames, numCycles, scaleMin, scaleMax, noiseLevel, anomalyPercentage, distortionCoefficient) {
     const url = 'http://127.0.0.1:8000/generate_animated_scaled_sphere';
-    const payload = { num_points: numPoints, num_frames: numFrames, num_cycles: numCycles, scale_min: scaleMin, scale_max: scaleMax };
+    const payload = { num_points: numPoints, num_frames: numFrames, num_cycles: numCycles, scale_min: scaleMin, scale_max: scaleMax, noise_level: noiseLevel, anomaly_percentage: anomalyPercentage, distortion_coefficient: distortionCoefficient };
     return await postData(url, payload);
 }
 
 // Scenario 4: Fetch Custom Scaled Hollow Sphere Point Cloud
-export async function fetchCustomScaledHollowSphere(numPoints, numFrames, numCycles, scaleMin, scaleMax) {
+export async function fetchCustomScaledHollowSphere(numPoints, numFrames, numCycles, scaleMin, scaleMax, noiseLevel, anomalyPercentage, distortionCoefficient) {
     const url = 'http://127.0.0.1:8000/generate_custom_scaled_hollow_sphere';
-    const payload = { num_points: numPoints, num_frames: numFrames, num_cycles: numCycles, scale_min: scaleMin, scale_max: scaleMax };
+    const payload = { num_points: numPoints, num_frames: numFrames, num_cycles: numCycles, scale_min: scaleMin, scale_max: scaleMax, noise_level: noiseLevel, anomaly_percentage: anomalyPercentage, distortion_coefficient: distortionCoefficient };
     return await postData(url, payload);
 }
 

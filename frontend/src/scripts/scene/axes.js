@@ -71,13 +71,23 @@ function createTextLabel(text, position, color) {
     canvas.height = size;
 
     const context = canvas.getContext('2d');
+
+    // Set background to transparent
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Text settings
     context.fillStyle = color; // Text color
     context.textAlign = 'center';
     context.font = '24px Times New Roman';
     context.fillText(text, size / 2, size / 2 + 10);
 
     const texture = new THREE.CanvasTexture(canvas);
-    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const material = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: false, // Disable depth test to avoid rendering issues with transparency
+        depthWrite: false // Avoid depth writing
+    });
     const sprite = new THREE.Sprite(material);
     sprite.scale.set(0.5, 0.5, 0.5); // Adjust sprite size
     sprite.position.copy(position);

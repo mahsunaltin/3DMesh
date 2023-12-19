@@ -9,10 +9,9 @@ from backend.src.utils.calculate_data import calculate_data
 from backend.src.utils.synthetic_data_generator import (
     generate_points_data, 
     generate_synthetic_time_series, 
-    generate_animated_scaled_sphere_point_cloud, 
-    scale_min_func, 
-    scale_max_func, 
-    generate_custom_scaled_sphere_point_cloud
+    apply_sinusoidal_transformation_with_noise_and_anomalies,
+    generate_hallow_sphere_point_cloud,
+    generate_filled_sphere_point_cloud
 )
 
 app = FastAPI()
@@ -110,6 +109,9 @@ class AnimatedSphereRequest(BaseModel):
     scale_min: float = 0.1      # Minimum scale value for the points
     scale_max: float = 1.0      # Maximum scale value for the points
     num_cycles: int = 1         # Number of cycles for the oscillation
+    noise_level: float = 0.1    # Standard deviation of the random noise
+    anomaly_percentage: float = 0.1 # Percentage of points that are anomalies
+    distortion_coefficient: float = 0.5 # Distortion coefficient for anomaly points
 
     class Config:
         schema_extra = {
@@ -118,7 +120,10 @@ class AnimatedSphereRequest(BaseModel):
                 "num_frames": 30,
                 "scale_min": 0.5,
                 "scale_max": 2.0,
-                "num_cycles": 5
+                "num_cycles": 5,
+                "noise_level": 0.1,
+                "anomaly_percentage": 0.2,
+                "distortion_coefficient": 0.5
             }
         }
 
@@ -138,16 +143,27 @@ async def generate_animated_scaled_sphere(request: AnimatedSphereRequest):
         - `scale_min`: Minimum scale value for the points.
         - `scale_max`: Maximum scale value for the points.
         - `num_cycles`: Number of cycles for the oscillation.
+        - `noise_level`: Standard deviation of the random noise.
+        - `anomaly_percentage`: Percentage of points that are anomalies.
+        - `distortion_coefficient`: Distortion coefficient for anomaly points.
 
     Returns:
         JSONResponse: A list of point clouds representing an animated scaled sphere.
     """
-    frames_data = generate_animated_scaled_sphere_point_cloud(
-        request.num_points, 
-        request.num_frames, 
-        lambda frame: scale_min_func(frame, request.num_frames, request.num_cycles, request.scale_min, request.scale_max), 
-        lambda frame: scale_max_func(frame, request.num_frames, request.num_cycles, request.scale_min, request.scale_max)
-    )
+    # Generate the base point cloud
+    base_point_cloud = generate_filled_sphere_point_cloud(request.num_points)
+    
+    # Generate the animated point clouds
+    frames_data = [
+        apply_sinusoidal_transformation_with_noise_and_anomalies(
+                base_point_cloud, frame, 
+                request.num_frames, request.scale_min, request.scale_max, 
+                request.num_cycles, request.noise_level, 
+                request.anomaly_percentage, request.distortion_coefficient
+            ) 
+        for frame in range(request.num_frames)
+    ]
+    
     data = [calculate_data(points) for points in frames_data]
     return JSONResponse(content=jsonable_encoder(data))
 
@@ -158,6 +174,9 @@ class CustomScaledHollowSphereRequest(BaseModel):
     scale_min: float = 0.1      # Minimum scale value for the points
     scale_max: float = 1.0      # Maximum scale value for the points
     num_cycles: int = 1         # Number of cycles for the oscillation
+    noise_level: float = 0.1    # Standard deviation of the random noise
+    anomaly_percentage: float = 0.1 # Percentage of points that are anomalies
+    distortion_coefficient: float = 0.5 # Distortion coefficient for anomaly points
 
     class Config:
         schema_extra = {
@@ -166,7 +185,10 @@ class CustomScaledHollowSphereRequest(BaseModel):
                 "num_frames": 20,
                 "scale_min": 0.2,
                 "scale_max": 1.5,
-                "num_cycles": 3
+                "num_cycles": 3,
+                "noise_level": 0.1,
+                "anomaly_percentage": 0.2,
+                "distortion_coefficient": 0.5
             }
         }
 
@@ -186,11 +208,26 @@ async def generate_custom_scaled_hollow_sphere(request: CustomScaledHollowSphere
         - `scale_min`: Minimum scale value for the points.
         - `scale_max`: Maximum scale value for the points.
         - `num_cycles`: Number of cycles for the oscillation.
+        - `noise_level`: Standard deviation of the random noise.
+        - `anomaly_percentage`: Percentage of points that are anomalies.
+        - `distortion_coefficient`: Distortion coefficient for anomaly points.
     
     Returns:
         JSONResponse: A list of point clouds representing a custom scaled hollow sphere.
     """
-    frames_data = generate_custom_scaled_sphere_point_cloud(
-        request.num_points, request.num_frames, request.scale_min, request.scale_max, request.num_cycles)
+    # Generate the base point cloud
+    base_point_cloud = generate_hallow_sphere_point_cloud(request.num_points)
+    
+    # Generate the animated point clouds
+    frames_data = [
+        apply_sinusoidal_transformation_with_noise_and_anomalies(
+                base_point_cloud, frame, 
+                request.num_frames, request.scale_min, request.scale_max, 
+                request.num_cycles, request.noise_level, 
+                request.anomaly_percentage, request.distortion_coefficient
+            ) 
+        for frame in range(request.num_frames)
+    ]
+
     data = [calculate_data(points) for points in frames_data]
     return JSONResponse(content=jsonable_encoder(data))

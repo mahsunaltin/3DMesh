@@ -1,0 +1,60 @@
+/* styles_for_detailed.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* Media query for screens wider than 768px (like desktops) */
+@media (min-width: 768px) {
+    .grid-container {
+        display: grid;
+        height: 100vh; 
+        grid-template-columns: 1fr 1fr 1fr; 
+        grid-template-rows: 1fr; 
+        justify-content: center;
+        align-items: center;
+    }
+
+    .grid-item {
+        border: 1px solid #bbb;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 6px;
+        height: 40%;
+    }
+
+    .grid-item canvas {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* Media query for screens smaller than 768px (like mobile phones) */
+@media (max-width: 768px) {
+    .grid-container {
+        display: grid;
+        height: 100vh; 
+        grid-template-columns: 1fr; 
+        grid-template-rows: 1fr 1fr 1fr; 
+        justify-content: center;
+        align-items: center;
+    }
+
+    .grid-item {
+        border: 1px solid #bbb;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 6px;
+        height: 95%;
+    }
+
+    .grid-item canvas {
+        width: 100%;
+        height: 100%;
+    }
+}

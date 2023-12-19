@@ -2,33 +2,39 @@ import * as THREE from 'three';
 
 // Inner points settings
 export let innerPointSize = 0.025; // Default size for inner points
-export let innerPointColor = 0x2C3A2D; // Default color for inner points
+export let innerPointColor = 0xA326C6; // Default color for inner points
 
 // Outer points settings
 export let outerPointSize = 0.05; // Default size for outer points
-export let outerPointColor = 0x53131D; // Default color for outer points
+export let outerPointColor = 0x0055FF; // Default color for outer points
+
+// Anomaly points settings
+export let anomalyPointSize = 0.07; // Default size for anomaly points
+export let anomalyPointColor = 0xFF0000; // Default color for anomaly points
 
 // Faces settings
-export let faceColor = 0xC2C2AE; // Default color for faces
-export let faceOpacity = 0.5; // Default opacity for faces
+export let faceColor = 0xD8FCFF; // Default color for faces
+export let faceOpacity = 0.2; // Default opacity for faces
 
 // Edge settings
 export let edgeColor = 0x090B0B; // Default edge color (black)
-export let edgeOpacity = 1.0;    // Default edge opacity (fully opaque)
+export let edgeOpacity = 0.5;    // Default edge opacity (fully opaque)
 
 /**
  * Sets up interactive controls for the 3D objects in the scene.
  * 
  * @param {THREE.Group} innerPointsGroup - Group containing the inner points.
  * @param {THREE.Group} outerPointsGroup - Group containing the outer points.
+ * @param {THREE.Group} anomalyPointsGroup - Group containing the anomaly points.
  * @param {THREE.Group} facesGroup - Group containing the faces.
  * @param {THREE.Group} edgesGroup - Group containing the edges.
  * @param {Object} updateFunctions - Object containing update functions for size, color, and opacity.
  */
-export function setupControls(innerPointsGroup, outerPointsGroup, facesGroup, edgesGroup, updateFunctions) {
+export function setupControls(innerPointsGroup, outerPointsGroup, anomalyPointsGroup, facesGroup, edgesGroup, updateFunctions) {
     const {
         updateInnerPointSize, updateInnerPointColor,
         updateOuterPointSize, updateOuterPointColor,
+        updateAnomalyPointSize, updateAnomalyPointColor,
         updateFaceOpacity, updateFaceColor, 
         updateEdgeColor, updateEdgeOpacity
     } = updateFunctions;
@@ -55,6 +61,18 @@ export function setupControls(innerPointsGroup, outerPointsGroup, facesGroup, ed
     });
     document.getElementById('outerVisible').addEventListener('change', (event) => {
         outerPointsGroup.visible = event.target.checked;
+    });
+
+    // Controls for Anomaly Points
+    document.getElementById('anomalySize').addEventListener('input', (event) => {
+        updateAnomalyPointSize(anomalyPointsGroup, parseFloat(event.target.value));
+    });
+    document.getElementById('anomalyColor').addEventListener('input', (event) => {
+        updateAnomalyPointColor(anomalyPointsGroup, event.target.value);
+        document.getElementById('anomalyColorCircle').style.backgroundColor = event.target.value;
+    });
+    document.getElementById('anomalyVisible').addEventListener('change', (event) => {
+        anomalyPointsGroup.visible = event.target.checked;
     });
 
     // Controls for Faces
@@ -133,6 +151,34 @@ export function updateOuterPointColor(group, newColor) {
     outerPointColor = new THREE.Color(newColor);
     group.children.forEach(child => {
         child.material.color.set(outerPointColor);
+    });
+}
+
+/********************  Anomaly Points Functions  ********************/
+
+/**
+ * Updates the size of all objects within a group.
+ * 
+ * @param {THREE.Group} group - The group whose children's size will be updated.
+ * @param {number} newSize - The new size to apply.
+ */
+export function updateAnomalyPointSize(group, newSize) {
+    anomalyPointSize = newSize;
+    group.children.forEach(child => {
+        child.scale.set(newSize, newSize, newSize);
+    });
+}
+
+/**
+ * Updates the color of all objects within a group.
+ * 
+ * @param {THREE.Group} group - The group whose children's color will be updated.
+ * @param {string} newColor - The new color to apply.
+ */
+export function updateAnomalyPointColor(group, newColor) {
+    anomalyPointColor = new THREE.Color(newColor);
+    group.children.forEach(child => {
+        child.material.color.set(anomalyPointColor);
     });
 }
 

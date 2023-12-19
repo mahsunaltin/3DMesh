@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Welcome - 3D Mesh Visualization</title>
+    <title>Welcome - 3DMesh Visualization</title>
     <style>
         /* Global Styles */
         body {
@@ -22,7 +22,7 @@
 
         header h1 {
             margin: 0;
-            font-size: 2.5em;
+            font-size: 4em;
             color: #007bff;
         }
 
@@ -174,7 +174,7 @@
 
     <!-- Header Section -->
     <header>
-        <h1>3D Mesh Visualization</h1>
+        <h1>3DMesh Visualization</h1>
     </header>
 
     <!-- Data Settings Section -->
@@ -244,8 +244,8 @@
                         <input id="numFrames2" type="number" value="30">
                     </div>
                     <div class="input-group">
-                        <label for="noiseLevel">Noise Level: </label>
-                        <input id="noiseLevel" type="number" value="0.1">
+                        <label for="noiseLevel1">Noise Level: </label>
+                        <input id="noiseLevel1" type="number" value="0.1">
                     </div>
                     <div class="input-group">
                         <label for="anomalyLevel">Anomaly Level: </label>
@@ -279,6 +279,18 @@
                         <label for="numCycles1">Number of Cycles: </label>
                         <input id="numCycles1" type="number" value="5">
                     </div>
+                    <div class="input-group">
+                        <label for="noiseLevel2">Noise Level: </label>
+                        <input id="noiseLevel2" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="anomalyPercentage1">Anomaly Percentage: </label>
+                        <input id="anomalyPercentage1" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="distortionCoefficient1">Distortion Coefficient: </label>
+                        <input id="distortionCoefficient1" type="number" value="0.1">
+                    </div>
 
                     <!-- Fetch Data Button -->
                     <div id="buttonContent">
@@ -306,6 +318,18 @@
                     <div class="input-group">
                         <label for="numCycles2">Number of Cycles: </label>
                         <input id="numCycles2" type="number" value="3">
+                    </div>
+                    <div class="input-group">
+                        <label for="noiseLevel3">Noise Level: </label>
+                        <input id="noiseLevel3" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="anomalyPercentage2">Anomaly Percentage: </label>
+                        <input id="anomalyPercentage2" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="distortionCoefficient2">Distortion Coefficient: </label>
+                        <input id="distortionCoefficient2" type="number" value="0.1">
                     </div>
 
                     <!-- Fetch Data Button -->
@@ -339,7 +363,7 @@
                     // Fetch data logic for Scenario 2
                     const numFrames = document.getElementById('numFrames2').value;
                     const numPointsPerFrame = document.getElementById('numPoints2').value;
-                    const noiseLevel = document.getElementById('noiseLevel').value;
+                    const noiseLevel = document.getElementById('noiseLevel1').value;
                     const anomalyLevel = document.getElementById('anomalyLevel').value;
 
                     // Redirect to visualization.html with query parameters
@@ -357,9 +381,12 @@
                     const minScale = document.getElementById('minScale1').value;
                     const maxScale = document.getElementById('maxScale1').value;
                     const numCycles = document.getElementById('numCycles1').value;
+                    const noiseLevel = document.getElementById('noiseLevel2').value;
+                    const anomalyPercentage = document.getElementById('anomalyPercentage1').value;
+                    const distortionCoefficient = document.getElementById('distortionCoefficient1').value;
 
                     // Redirect to visualization.html with query parameters
-                    window.location.href = `visualization.html?scenario=3&numPoints=${numPoints}&numFrames=${numFrames}&scaleMin=${minScale}&scaleMax=${maxScale}&numCycles=${numCycles}`;
+                    window.location.href = `visualization.html?scenario=3&numPoints=${numPoints}&numFrames=${numFrames}&scaleMin=${minScale}&scaleMax=${maxScale}&numCycles=${numCycles}&noiseLevel=${noiseLevel}&anomalyPercentage=${anomalyPercentage}&distortionCoefficient=${distortionCoefficient}`;
                 });
             }
 
@@ -373,9 +400,12 @@
                     const minScale = document.getElementById('minScale2').value;
                     const maxScale = document.getElementById('maxScale2').value;
                     const numCycles = document.getElementById('numCycles2').value;
+                    const noiseLevel = document.getElementById('noiseLevel3').value;
+                    const anomalyPercentage = document.getElementById('anomalyPercentage2').value;
+                    const distortionCoefficient = document.getElementById('distortionCoefficient2').value;
 
                     // Redirect to visualization.html with query parameters
-                    window.location.href = `visualization.html?scenario=4&numPoints=${numPoints}&numFrames=${numFrames}&scaleMin=${minScale}&scaleMax=${maxScale}&numCycles=${numCycles}`;
+                    window.location.href = `visualization.html?scenario=4&numPoints=${numPoints}&numFrames=${numFrames}&scaleMin=${minScale}&scaleMax=${maxScale}&numCycles=${numCycles}&noiseLevel=${noiseLevel}&anomalyPercentage=${anomalyPercentage}&distortionCoefficient=${distortionCoefficient}`;
                 });
             }
         }

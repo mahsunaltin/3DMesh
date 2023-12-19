@@ -69,9 +69,9 @@ Here's what we're excited about adding next:
 - [x] Enhanced Control Panel for Planes and Axes 🎛️
 - [x] Optimized Mobile and Desktop Experience 📱💻
 - [x] Advanced Interaction Tools (Pan, Zoom, Controllers) 🛠️
+- [x] Graph Legends for Clarity 📊
 - [ ] Import Options for CSV and Excel Files 📥
 - [ ] Export Options for GIFs. 📤
-- [ ] Graph Legends for Clarity 📊
 
 ## Connect with Us 🌍
 

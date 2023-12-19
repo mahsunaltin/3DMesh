@@ -8,11 +8,11 @@ export function switchBackgroundColor() {
 
     if (renderer) {
         if (checkbox.checked) {
-            renderer.setClearColor(0x4A5759, 1); // Dark mode color
+            renderer.setClearColor(0x37474F, 1); // Dark mode color
             modeText.textContent = 'Dark Mode';
             isDarkMode = true;
         } else {
-            renderer.setClearColor(0xF6F6F3, 1); // Light mode color
+            renderer.setClearColor(0xFAFAFA, 1); // Light mode color
             modeText.textContent = 'Light Mode';
             isDarkMode = false;
         }

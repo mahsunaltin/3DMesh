@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>3D Mesh Visualization</title>
+    <title>3DMesh Visualization</title>
 </head>
 <body>
 
     <div id="loadingScreen">
         <div id="loadingCircle"></div>
-    </div>
+    </div>   
 
-    
     <div id="timeBarContainer">
         <div id="timeBar"></div>
         <div id="timeBarText">Frame: 0 / 0</div>
@@ -23,33 +22,45 @@
         <span id="modeText">Light Mode</span>
     </div>
     
-
+    <div id="point-selector-container">
+        <label for="point-selector">Select Point:</label>
+        <select id="point-selector">
+            <!-- Options will be added here dynamically -->
+        </select>
+    </div> 
 
     <div id="controls">
         <details class="control-section">
             <summary>Inner Points</summary>
-            <label>Size: <input type="range" id="innerSize" min="0.001" max="0.1" step="0.01" value="0.025"></label>
-            <label>Color: <input type="color" id="innerColor" value="#b0c4b1"></label>
+            <label>Size: <input type="range" id="innerSize" min="0.001" max="0.3" step="0.01" value="0.025"></label>
+            <label>Color: <input type="color" id="innerColor" value="#A326C6"></label>
             <label>Visible: <input type="checkbox" id="innerVisible" checked></label>
         </details>
     
         <details class="control-section">
             <summary>Outermost Points</summary>
-            <label>Size: <input type="range" id="outerSize" min="0.001" max="0.1" step="0.01" value="0.05"></label>
-            <label>Color: <input type="color" id="outerColor" value="#53131D"></label>
+            <label>Size: <input type="range" id="outerSize" min="0.001" max="0.3" step="0.01" value="0.05"></label>
+            <label>Color: <input type="color" id="outerColor" value="#0055FF"></label>
             <label>Visible: <input type="checkbox" id="outerVisible" checked></label>
+        </details>
+
+        <details class="control-section">
+            <summary>Anomaly Points</summary>
+            <label>Size: <input type="range" id="anomalySize" min="0.001" max="0.3" step="0.01" value="0.05"></label>
+            <label>Color: <input type="color" id="anomalyColor" value="#FF0000"></label>
+            <label>Visible: <input type="checkbox" id="anomalyVisible" unchecked></label>
         </details>
     
         <details class="control-section">
             <summary>Faces</summary>
-            <label>Opacity: <input type="range" id="facesOpacity" min="0" max="1" step="0.1" value="0.50"></label>
-            <label>Color: <input type="color" id="facesColor" value="#F6F6F3"></label>
+            <label>Opacity: <input type="range" id="facesOpacity" min="0" max="1" step="0.05" value="0.20"></label>
+            <label>Color: <input type="color" id="facesColor" value="#D8FCFF"></label>
             <label>Visible: <input type="checkbox" id="facesVisible" checked></label>
         </details>
     
         <details class="control-section">
             <summary>Edges</summary>
-            <label>Opacity: <input type="range" id="edgeOpacitySlider" min="0" max="1" step="0.01" value="1"></label>
+            <label>Opacity: <input type="range" id="edgeOpacitySlider" min="0" max="1" step="0.01" value="0.5"></label>
             <label>Color: <input type="color" id="edgeColorPicker" value="#090B0B"></label>
             <label>Visible: <input type="checkbox" id="edgeVisible" checked></label>
         </details>
@@ -112,7 +123,14 @@
             <div class="color-circle" id="innerColorCircle"></div>
             <p>Inner points</p>
         </div>
+        <div class="legend-item">
+            <div class="color-circle" id="anomalyColorCircle"></div>
+            <p>Anomaly points</p>
+        </div>
     </div>
+
+    <div id="numberOfAnomalies">Number of anomalies: 0 / 0</div>
+
 
 </body>
 </html>

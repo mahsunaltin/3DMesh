@@ -2,15 +2,16 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  // Entry point of your application
+  // Entry points of your application
   entry: {
     main: './frontend/src/scripts/main.js',
+    detailed: './frontend/src/scripts/detailed_visualization/scripts_for_detailed.js',
   },
 
   // Output configuration for Webpack
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'frontend/dist'),
+    path: path.resolve(__dirname, './frontend/dist'),
     publicPath: '/',
   },
 
@@ -20,7 +21,7 @@ module.exports = {
   // Configuration for the dev server
   devServer: {
     static: {
-      directory: path.join(__dirname, 'frontend/dist'),
+      directory: path.join(__dirname, './frontend/dist'),
       publicPath: '/',
       serveIndex: true,
       watch: true,
@@ -29,7 +30,7 @@ module.exports = {
     open: true,
     hot: true,
     historyApiFallback: {
-      index: '/index.html', 
+      index: '/index.html',
     },
   },
 
@@ -53,6 +54,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './frontend/src/templates/visualization.html',
       filename: 'visualization.html',
+      chunks: ['main'],
+    }),
+    new HtmlWebpackPlugin({
+      template: './frontend/src/templates/detailed_visualization.html',
+      filename: 'detailed_visualization.html',
+      chunks: ['detailed'],
     }),
   ],
 };
