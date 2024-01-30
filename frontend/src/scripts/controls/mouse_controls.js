@@ -73,11 +73,28 @@ export function onMouseClick(event) {
             /** GET THE DATA **/
             // Array to store points from all frames at the foundIndex
             let pointsAtSameIndex = [];
+            let anomalyPointsAtSameIndex = [];
             // Iterate through all frames in framesData
             for (let frame of framesData) {
                 if (frame.all_points && frame.all_points.length > foundIndex) {
                     // Add the point at foundIndex from each frame to the array
                     pointsAtSameIndex.push(frame.all_points[foundIndex]);
+                    // Variable to check if an anomaly point was found
+                    let foundAnomalyPoint = false;
+                    // Check if the frame has anomaly points
+                    if (frame.anomaly_points && frame.anomaly_points.length > 0) {
+                        // Iterate through all anomaly points in the frame
+                        for (let anomalyPoint of frame.anomaly_points) {
+                            // Check if the anomaly point is the same point as the one we found
+                            if (positionsAreClose(anomalyPoint, frame.all_points[foundIndex], 0)) {
+                                // Add the anomaly point to the array
+                                anomalyPointsAtSameIndex.push(anomalyPoint);
+                                foundAnomalyPoint = true;
+                            }
+                        }
+                    }
+                    // If no anomaly point was found, add null to the array
+                    if (!foundAnomalyPoint) anomalyPointsAtSameIndex.push(null);
                 } else {
                     // Handle the case where the frame does not have enough points
                     pointsAtSameIndex.push(null); // Or handle this case as needed
@@ -94,7 +111,7 @@ export function onMouseClick(event) {
                 newWindow.document.title = `Position of Point ${foundIndex} in X, Y, Z Coordinates with respect to Time`;
 
                 if (newWindow.setPointsData) {
-                    newWindow.setPointsData(pointsAtSameIndex);
+                    newWindow.setPointsData(pointsAtSameIndex, anomalyPointsAtSameIndex);
                     console.log('Sent data to the new window.');
                 } else {
                     console.log('setPointsData function not found in the new window.');

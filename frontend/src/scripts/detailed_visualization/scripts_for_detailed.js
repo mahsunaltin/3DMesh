@@ -3,13 +3,22 @@ import Chart from 'chart.js/auto';
 
 // Global variable to store points data
 let globalPointsData = [];
+let globalAnomalyPointsData = [];
 let chart1, chart2, chart3; // Chart instances
 let maxFrames = 0; // Maximum number of frames
 
 // Function to be called from the main window
-window.setPointsData = function(pointsData) {
+window.setPointsData = function(pointsData, anomalyPointsData) {
     globalPointsData = pointsData;
+    globalAnomalyPointsData = anomalyPointsData;
     console.log("Received points data:", pointsData);
+    console.log("Received anomaly points data:", anomalyPointsData);
+
+    // Check if the data is valid before processing
+    if (!globalPointsData || !globalAnomalyPointsData) {
+        console.error('Invalid data received for charts');
+        return;
+    }
 
     // Process the data and create charts
     processDataAndCreateCharts();
@@ -41,13 +50,13 @@ function processDataAndCreateCharts() {
     const xDataset = {
         label: 'X Axis',
         data: xValues,
-        borderColor: '#a83232',
+        borderColor: 'orange',
         fill: false
     };
     const yDataset = {
         label: 'Y Axis',
         data: yValues,
-        borderColor: '#32a832',
+        borderColor: 'green',
         fill: false
     };
     const zDataset = {
@@ -57,12 +66,60 @@ function processDataAndCreateCharts() {
         fill: false
     };
 
+    // Arrays to store the anomaly values for each axis
+    let xAnomalyValues = [];
+    let yAnomalyValues = [];
+    let zAnomalyValues = [];
+
+    // Insert the anomaly points data into the arrays
+    globalAnomalyPointsData.forEach((anomalyPoint, index) => {
+        if (anomalyPoint) { // Check if anomalyPoint is not null
+            xAnomalyValues.push({x: index, y: anomalyPoint[0]});
+            yAnomalyValues.push({x: index, y: anomalyPoint[1]});
+            zAnomalyValues.push({x: index, y: anomalyPoint[2]});
+        }
+    });
+
+    const anomalyColor = 'red';
+
+    // Preparing anomaly datasets for Chart.js with distinct styling
+    const anomalyPointStyle = {
+        pointRadius: 7, // Larger radius for anomaly points
+        pointBackgroundColor: anomalyColor, // Different color for anomaly points
+        pointBorderColor: anomalyColor,
+        borderColor: anomalyColor,
+        showLine: false, // Only show points, no line
+    };
+
+    const xAnomalyDataset = {
+        label: 'X Axis Anomalies',
+        data: xAnomalyValues,
+        ...anomalyPointStyle,
+    };
+
+    const yAnomalyDataset = {
+        label: 'Y Axis Anomalies',
+        data: yAnomalyValues,
+        ...anomalyPointStyle,
+    };
+
+    const zAnomalyDataset = {
+        label: 'Z Axis Anomalies',
+        data: zAnomalyValues,
+        ...anomalyPointStyle,
+    };
+
     // Create charts
-    createCharts(xDataset, yDataset, zDataset);
+    createCharts(xDataset, yDataset, zDataset, xAnomalyDataset, yAnomalyDataset, zAnomalyDataset);
 }
 
 // Function to create charts
-function createCharts(xDataset, yDataset, zDataset) {
+function createCharts(xDataset, yDataset, zDataset, xAnomalyDataset, yAnomalyDataset, zAnomalyDataset) {
+    // Check if chart elements exist in the DOM
+    if (!document.getElementById('chart1') || !document.getElementById('chart2') || !document.getElementById('chart3')) {
+        console.error('Chart elements not found in the DOM');
+        return;
+    }
     // Chart.js options
     const chartOptions = {
         responsive: true,
@@ -152,6 +209,16 @@ function createCharts(xDataset, yDataset, zDataset) {
         }
     });
 
+
+    // Adding anomaly datasets
+    chart1.data.datasets.push(xAnomalyDataset);
+    chart2.data.datasets.push(yAnomalyDataset);
+    chart3.data.datasets.push(zAnomalyDataset);
+
+    // Update charts to render the new datasets
+    chart1.update();
+    chart2.update();
+    chart3.update();
 
 }
 

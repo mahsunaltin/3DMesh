@@ -96,8 +96,6 @@ def apply_sinusoidal_transformation_with_noise_and_anomalies(base_points, frame,
 
     return transformed_points
 
-
-
 def generate_filled_sphere_point_cloud(num_points, radius=1):
     """
     Generate a filled 3D point cloud of a sphere shape.

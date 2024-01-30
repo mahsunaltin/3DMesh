@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import '../styles/style.css';
 
 import { setupControls, updateFaceColor, updateFaceOpacity,  updateEdgeColor, updateEdgeOpacity, updateInnerPointColor, updateOuterPointColor, updateAnomalyPointColor, updateInnerPointSize, updateOuterPointSize, updateAnomalyPointSize } from './controls/controls_setup.js';
-import { findOutermostPoint, findLargestAbsoluteCoordinate, fetchAnimatedScaledSphere, fetchCustomScaledHollowSphere, fetchRandomScaledPoints, fetchTimeSeriesNoiseAnomalies } from './data/fetch_data.js';
+import { findOutermostPoint, findLargestAbsoluteCoordinate, fetchAnimatedScaledSphere, fetchCustomScaledHollowSphere, fetchReadyDataset, fetchTimeSeriesNoiseAnomalies, fetchVideo } from './data/fetch_data.js';
 import { createScene, addOrbitControls } from './scene/scene_setup.js';
 import { setupPlaybackControls } from './controls/playback_controls.js'; 
 import { onDocumentMouseMove } from './controls/mouse_controls.js'; 
@@ -50,10 +50,10 @@ async function main() {
     // Fetch data based on scenario
     switch (scenario) {
         case '1':
-            const numPoints = parseInt(urlParams.get('numPoints'), 10);
-            const scale = parseInt(urlParams.get('scale'), 10);
-            const numFrames = parseInt(urlParams.get('numFrames'), 10);
-            framesData = await fetchRandomScaledPoints(numPoints, scale, numFrames);
+            const readyData = urlParams.get('readyData');
+            const startIndex = parseInt(urlParams.get('startIndex'), 10);
+            const endIndex = parseInt(urlParams.get('endIndex'), 10);
+            framesData = await fetchReadyDataset(readyData, startIndex, endIndex);
             break;
 
         case '2':
@@ -87,6 +87,11 @@ async function main() {
             const anomalyPercentage2 = parseFloat(urlParams.get('anomalyPercentage'));
             const distortionCoefficient2 = parseFloat(urlParams.get('distortionCoefficient'));
             framesData = await fetchCustomScaledHollowSphere(numPoints4, numFrames4, numCycles4, scaleMin4, scaleMax4, noiseLevel3, anomalyPercentage2, distortionCoefficient2);
+            break;
+
+        case '5':
+            const dataRef = urlParams.get('dataRef');
+            framesData = await fetchVideo(dataRef);
             break;
 
         default:

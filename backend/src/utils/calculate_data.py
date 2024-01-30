@@ -28,4 +28,5 @@ def calculate_data(points):
         "anomaly_points": anomaly_points,
         "faces": [np.array(face).tolist() for face in faces_simplified]
     }
+    
     return data

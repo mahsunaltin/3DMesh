@@ -1,9 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
+import torch
+import shutil
+import uuid
+import os
+import json
+import numpy as np
 
 from backend.src.utils.calculate_data import calculate_data
 from backend.src.utils.synthetic_data_generator import (
@@ -12,6 +18,10 @@ from backend.src.utils.synthetic_data_generator import (
     apply_sinusoidal_transformation_with_noise_and_anomalies,
     generate_hallow_sphere_point_cloud,
     generate_filled_sphere_point_cloud
+)
+from backend.src.utils.data_generator_from_video import (
+    load_model,
+    video_to_point_clouds
 )
 
 app = FastAPI()
@@ -27,39 +37,69 @@ app.add_middleware(
 
 # Scenario 1: Random Scaled Point Generation
 class RandomScaledPointsRequest(BaseModel):
-    num_points: int                     # Number of points to generate in each frame
-    scale: float                        # Scaling factor for the points
-    num_frames: Optional[int] = 100     # Number of frames to generate; defaults to 100
+    ready_data: str                     # The ready data to be processed
+    start_index: Optional[int] = 0      # Index of the first frame to generate; defaults to 0
+    end_index: Optional[int] = 100      # Index of the last frame to generate; defaults to 100
 
     class Config:
         schema_extra = {
             "example": {
-                "num_points": 50,
-                "scale": 1.5,
-                "num_frames": 10
+                "ready_data": "SMD_pca",
+                "scale": 0,
+                "num_frames": 100
             }
         }
 
-@app.post("/generate_random_scaled_points", summary="Generate Random Scaled Points")
-async def generate_random_scaled_points(request: RandomScaledPointsRequest):
+@app.post("/generate_ready_dataset_points", summary="Generate Ready Dataset Points")
+async def generate_ready_dataset_points(request: RandomScaledPointsRequest):
     """
-    Generates a series of 3D point clouds with random scales.
-    
-    Each point cloud consists of a specified number of points, scaled by a given factor.
-    This endpoint returns a series of point clouds, each generated with the specified scale.
-    
+    Generates a list of point clouds from a ready dataset.
+        
     Args:
         request (RandomScaledPointsRequest): The request parameters.
         
-        - `num_points`: Number of points to generate in each frame.
-        - `scale`: Scaling factor for the points.
-        - `num_frames`: Number of frames to generate; defaults to 100.
+        - `ready_data`: The ready data to be processed.
+        - `start_index`: Index of the first frame to generate; defaults to 0.
+        - `end_index`: Index of the last frame to generate; defaults to 100.
 
     Returns:
-        JSONResponse: A list of point clouds, each containing a specified number of randomly scaled points.
+        JSONResponse: A list of point clouds.
     """
-    frames_data = [generate_points_data(request.num_points, request.scale) for _ in range(request.num_frames)]
+    
+    if request.ready_data == "serverMachineDatasetPca":
+        dataset_folder_name = "serverMachineDataset"
+        dataset_name = "SMD_pca"
+        anomaly_dataset_name = "SMD_anomaly_pca"
+    elif request.ready_data == "serverMachineDatasetUmap":
+        dataset_folder_name = "serverMachineDataset"
+        dataset_name = "SMD_umap"
+        anomaly_dataset_name = "SMD_anomaly_umap"
+    elif request.ready_data == "serverMachineDatasetTsne":
+        dataset_folder_name = "serverMachineDataset"
+        dataset_name = "SMD_tsne"
+        anomaly_dataset_name = "SMD_anomaly_tsne"
+    elif request.ready_data == "serverMachineDatasetAutoencoder":
+        dataset_folder_name = "serverMachineDataset"
+        dataset_name = "SMD_autoencoder"
+        anomaly_dataset_name = "SMD_anomaly_autoencoder"
+    
+    # Read the JSON file
+    with open('./backend/data/' + dataset_folder_name + '/' + dataset_name + '.json', 'r') as file:
+        pca_list = json.load(file)
+        
+    with open('./backend/data/' + dataset_folder_name + '/' + anomaly_dataset_name + '.json', 'r') as file:
+        anomaly_points_list = json.load(file)
+
+    # Convert each sublist into a NumPy array
+    frames_data = [np.array(sublist) for sublist in pca_list[request.start_index:request.end_index]]
+        
     data = [calculate_data(points) for points in frames_data]
+    
+    # Iterate through enumarated data to add anomaly points
+    for index, frame in enumerate(data):
+        selected_anomaly_points_list = anomaly_points_list[request.start_index:request.end_index]
+        frame["anomaly_points"] = selected_anomaly_points_list[index]["anomaly_points"]
+        
     return JSONResponse(content=jsonable_encoder(data))
 
 # Scenario 2: Time Series with Noise and Anomalies
@@ -228,6 +268,54 @@ async def generate_custom_scaled_hollow_sphere(request: CustomScaledHollowSphere
             ) 
         for frame in range(request.num_frames)
     ]
-
+    
     data = [calculate_data(points) for points in frames_data]
     return JSONResponse(content=jsonable_encoder(data))
+
+# Scenario 5: Upload a Video to Generate a Time Series Point Cloud
+processed_data = {} # Temporary storage for processed data
+@app.post("/uploadvideo/")
+async def create_upload_file(file: UploadFile = File(...), num_points_per_frame: int = Form(...)):
+    """
+    Endpoint to upload a video and process it to generate point clouds.
+    """
+    # Load Monodepth2 model
+    model_name = "mono+stereo_640x192"
+    model_path = "./backend/src/models/monodepth2/" + model_name
+    encoder_path = model_path + "/encoder.pth"
+    depth_decoder_path = model_path + "/depth.pth"
+
+    # Load the model onto CPU
+    encoder, depth_decoder = load_model(encoder_path, depth_decoder_path, device=torch.device("cpu"))
+    
+    # Save temporary video file
+    temp_video_path = "temp_video.mp4"
+    with open(temp_video_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Process the video
+    point_clouds = video_to_point_clouds(temp_video_path, encoder, depth_decoder, num_points_per_frame=num_points_per_frame)
+
+    # Clean up: remove the temporary file
+    os.remove(temp_video_path)
+
+    # Calculate data for each point cloud    
+    data = [calculate_data(points) for points in point_clouds]
+
+    # Generate a unique ID for this data
+    data_id = str(uuid.uuid4())
+    processed_data[data_id] = data
+
+    # Return the unique ID as reference
+    return {"data_id": data_id}
+
+@app.get("/retrieve_data/{data_id}")
+async def retrieve_data(data_id: str):
+    """
+    Endpoint to retrieve processed data using a unique ID.
+    """
+    if data_id in processed_data:
+        return JSONResponse(content=jsonable_encoder(processed_data[data_id]))
+    else:
+        return JSONResponse(content={"error": "Data not found"}, status_code=404)
+

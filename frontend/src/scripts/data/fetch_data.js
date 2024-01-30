@@ -1,9 +1,9 @@
 import { hideLoadingScreen } from '../ui/loading_screen.js';
 
 // Scenario 1: Fetch Random Scaled Points
-export async function fetchRandomScaledPoints(numPoints, scale, numFrames) {
-    const url = 'http://127.0.0.1:8000/generate_random_scaled_points';
-    const payload = { num_points: numPoints, scale: scale, num_frames: numFrames };
+export async function fetchReadyDataset(readyData, startIndex, endIndex) {
+    const url = 'http://127.0.0.1:8000/generate_ready_dataset_points';
+    const payload = { ready_data: readyData, start_index: startIndex, end_index: endIndex };
     return await postData(url, payload);
 }
 
@@ -27,6 +27,25 @@ export async function fetchCustomScaledHollowSphere(numPoints, numFrames, numCyc
     const payload = { num_points: numPoints, num_frames: numFrames, num_cycles: numCycles, scale_min: scaleMin, scale_max: scaleMax, noise_level: noiseLevel, anomaly_percentage: anomalyPercentage, distortion_coefficient: distortionCoefficient };
     return await postData(url, payload);
 }
+
+// Scenario 5: Fetch a Time Series Point Cloud by Loading a video file
+export async function fetchVideo(dataRef) {
+    const url = `http://127.0.0.1:8000/retrieve_data/${dataRef}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        hideLoadingScreen();  // Hide the loading screen on successful data retrieval
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        hideLoadingScreen();  // Hide the loading screen also in case of an error
+        return null;
+    }
+}
+
 
 // Helper function for POST requests
 /**

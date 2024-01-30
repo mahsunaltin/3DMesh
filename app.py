@@ -24,7 +24,11 @@ def signal_handler(sig, frame):
     print('Shutting down...')
     # Terminate the subprocesses
     if backend_process:
-        backend_process.terminate()
+        try:
+            os.kill(backend_process.pid, signal.SIGINT)
+        except Exception as e:
+            print(f"Error stopping backend: {e}")
+            backend_process.kill()
     if frontend_process:
         frontend_process.terminate()
     exit(0)
