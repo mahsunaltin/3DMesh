@@ -48,9 +48,6 @@ Completed the followings:
 
 ![visualization](images/visualization.gif)
 
-**Additional Visualizations by Python Libraries:**  In the `notebooks` directory, discover innovative visualizations crafted using:
-- Mayavi - for intricate 3D plotting
-- Matplotlib - for classic, reliable graphs
 
 ## Features and Tools 🛠️
 

@@ -28,7 +28,23 @@ export async function fetchCustomScaledHollowSphere(numPoints, numFrames, numCyc
     return await postData(url, payload);
 }
 
-// Scenario 5: Fetch a Time Series Point Cloud by Loading a video file
+// Scenario 5: Fetch Custom Harmonic Oscillating Point Cloud
+export async function fetchCustomHarmonicOscillating(numPoints, numFrames, d, w0, noiseLevel, anomalyPercentage, distortionCoefficient) {
+    const url = 'http://127.0.0.1:8000/generate_custom_harmonic_oscillating';
+    const payload = { 
+        num_points: numPoints, 
+        num_frames: numFrames, 
+        d: d, 
+        w0: w0, 
+        noise_level: noiseLevel, 
+        anomaly_percentage: anomalyPercentage, 
+        distortion_coefficient: distortionCoefficient 
+    };
+    return await postData(url, payload);
+}
+
+
+// Scenario 6: Fetch a Time Series Point Cloud by Loading a video file
 export async function fetchVideo(dataRef) {
     const url = `http://127.0.0.1:8000/retrieve_data/${dataRef}`;
     try {

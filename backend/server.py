@@ -17,7 +17,9 @@ from backend.src.utils.synthetic_data_generator import (
     generate_synthetic_time_series, 
     apply_sinusoidal_transformation_with_noise_and_anomalies,
     generate_hallow_sphere_point_cloud,
-    generate_filled_sphere_point_cloud
+    generate_filled_sphere_point_cloud,
+    apply_harmonic_sinusoidal_transformation,
+    apply_harmonic_transformation_with_noise_and_anomalies
 )
 from backend.src.utils.data_generator_from_video import (
     load_model,
@@ -272,7 +274,68 @@ async def generate_custom_scaled_hollow_sphere(request: CustomScaledHollowSphere
     data = [calculate_data(points) for points in frames_data]
     return JSONResponse(content=jsonable_encoder(data))
 
-# Scenario 5: Upload a Video to Generate a Time Series Point Cloud
+# Scenario 5: Custom Harmonic Oscillating Point Cloud
+class CustomHarmonicOscillatingRequest(BaseModel):
+    num_points: int             # Number of points to generate in each frame
+    num_frames: int             # Number of frames to generate
+    d: float                    # Damping coefficient for the harmonic oscillator
+    w0: float                   # Natural frequency for the harmonic oscillator
+    noise_level: float = 0.1    # Standard deviation of the random noise
+    anomaly_percentage: float = 0.1 # Percentage of points that are anomalies
+    distortion_coefficient: float = 1.5 # Distortion coefficient for anomaly points
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "num_points": 300,
+                "num_frames": 100,
+                "d": 0.1,
+                "w0": 1.0,
+                "noise_level": 0.05,
+                "anomaly_percentage": 0.1,
+                "distortion_coefficient": 1.5
+            }
+        }
+
+@app.post("/generate_custom_harmonic_oscillating", summary="Generate Custom Harmonic Oscillating Point Cloud")
+async def generate_custom_harmonic_oscillating(request: CustomHarmonicOscillatingRequest):
+    """
+    Generates a custom series of 3D point clouds with harmonic oscillations.
+
+    This endpoint creates a sequence of frames, each containing a point cloud where each point follows a harmonic oscillation pattern.
+    
+    Args:
+        request (CustomHarmonicOscillatingRequest): The request parameters including number of points, frames, harmonic oscillator parameters, noise, and anomaly settings.
+    
+        - `num_points`: Number of points to generate in each frame.
+        - `num_frames`: Number of frames to generate.
+        - `d`: Damping coefficient for the harmonic oscillator.
+        - `w0`: Natural frequency for the harmonic oscillator.
+        - `noise_level`: Standard deviation of the random noise.
+        - `anomaly_percentage`: Percentage of points that are anomalies.
+        - `distortion_coefficient`: Distortion coefficient for anomaly points.
+    
+    Returns:
+        JSONResponse: A list of point clouds representing a custom harmonic oscillating sphere.
+    """
+    # Generate the base point cloud
+    base_point_cloud = generate_filled_sphere_point_cloud(request.num_points)
+    
+    # Generate the animated point clouds
+    frames_data = [
+        apply_harmonic_transformation_with_noise_and_anomalies(
+                base_point_cloud, frame, 
+                request.num_frames, request.d, request.w0, 
+                request.noise_level, request.anomaly_percentage, 
+                request.distortion_coefficient
+            ) 
+        for frame in range(request.num_frames)
+    ]
+    
+    data = [calculate_data(points) for points in frames_data]
+    return JSONResponse(content=jsonable_encoder(data))
+
+# Scenario 6: Upload a Video to Generate a Time Series Point Cloud
 processed_data = {} # Temporary storage for processed data
 @app.post("/uploadvideo/")
 async def create_upload_file(file: UploadFile = File(...), num_points_per_frame: int = Form(...)):

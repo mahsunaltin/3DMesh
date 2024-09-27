@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 ######################################################################
 # Generate a synthetic time series dataset with scale input.         #   -   START
@@ -151,3 +152,68 @@ def generate_hallow_sphere_point_cloud(num_points):
 # Generate a scaled 3D point cloud of a hallow sphere shape with sinusoidal wave. #  -   END
 ###################################################################################
 
+
+
+
+
+
+
+
+def oscillator(d, w0, x):
+    assert d < w0
+    w = np.sqrt(w0**2 - d**2)
+    phi = np.arctan(-d / w)
+    A = 1 / (2 * np.cos(phi))
+    cos = torch.cos(phi + w * x)
+    exp = torch.exp(-d * x)
+    y = exp * 2 * A * cos
+    return y
+
+def apply_harmonic_sinusoidal_transformation(base_point, num_frames, d, w0, noise_level):
+    # Create a time array
+    time = np.linspace(0, 1, num_frames)
+    time_tensor = torch.tensor(time, dtype=torch.float32).view(-1, 1)
+    
+    # Calculate the harmonic oscillator scale
+    harmonic_scale = oscillator(d, w0, time_tensor).numpy().flatten()
+    
+    # Apply the transformation to each coordinate
+    transformed_points = []
+    for i in range(3):  # For x, y, z
+        sinusoidal_scale = np.sin(2 * np.pi * time + np.pi / 3 * i) * harmonic_scale
+        noisy_scale = sinusoidal_scale + np.random.normal(0, noise_level, num_frames)
+        transformed_coordinate = base_point[0, i] * noisy_scale
+        transformed_points.append(transformed_coordinate)
+    
+    return np.array(transformed_points).T
+
+
+def apply_harmonic_transformation_with_noise_and_anomalies(base_points, frame, num_frames, d, w0, noise_level, anomaly_percentage, distortion_coefficient):
+    # Create a time array
+    time = np.linspace(0, 1, num_frames)
+    time_tensor = torch.tensor(time, dtype=torch.float32).view(-1, 1)
+    
+    # Calculate the harmonic oscillator scale
+    harmonic_scale = oscillator(d, w0, time_tensor).numpy().flatten()
+    
+    transformed_points = []
+    for point in base_points:
+        # Apply harmonic transformation to each point
+        transformed_point = []
+        for i in range(3):  # For x, y, z
+            sinusoidal_scale = np.sin(2 * np.pi * frame / num_frames + np.pi / 3 * i) * harmonic_scale
+            noisy_scale = sinusoidal_scale + np.random.normal(0, noise_level, num_frames)
+            transformed_coordinate = point[i] * noisy_scale
+            transformed_point.append(transformed_coordinate)
+        
+        transformed_points.append(np.array(transformed_point).T)
+    
+    transformed_points = np.array(transformed_points)
+    transformed_points = transformed_points.reshape(-1, 3)
+    
+    num_anomaly_points = int(anomaly_percentage * base_points.shape[0])
+    anomaly_indices = np.random.choice(base_points.shape[0], num_anomaly_points, replace=False)
+    for index in anomaly_indices:
+        transformed_points[index] *= distortion_coefficient
+
+    return transformed_points

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import '../styles/style.css';
 
 import { setupControls, updateFaceColor, updateFaceOpacity,  updateEdgeColor, updateEdgeOpacity, updateInnerPointColor, updateOuterPointColor, updateAnomalyPointColor, updateInnerPointSize, updateOuterPointSize, updateAnomalyPointSize } from './controls/controls_setup.js';
-import { findOutermostPoint, findLargestAbsoluteCoordinate, fetchAnimatedScaledSphere, fetchCustomScaledHollowSphere, fetchReadyDataset, fetchTimeSeriesNoiseAnomalies, fetchVideo } from './data/fetch_data.js';
+import { findOutermostPoint, findLargestAbsoluteCoordinate, fetchAnimatedScaledSphere, fetchCustomScaledHollowSphere, fetchReadyDataset, fetchCustomHarmonicOscillating, fetchTimeSeriesNoiseAnomalies, fetchVideo } from './data/fetch_data.js';
 import { createScene, addOrbitControls } from './scene/scene_setup.js';
 import { setupPlaybackControls } from './controls/playback_controls.js'; 
 import { onDocumentMouseMove } from './controls/mouse_controls.js'; 
@@ -90,6 +90,17 @@ async function main() {
             break;
 
         case '5':
+            const numPoints5 = parseInt(urlParams.get('numPoints'), 10);
+            const numFrames5 = parseInt(urlParams.get('numFrames'), 10);
+            const d5 = parseFloat(urlParams.get('dampingCoefficient'));
+            const w05 = parseFloat(urlParams.get('naturalFrequency'));
+            const noiseLevel5 = parseFloat(urlParams.get('noiseLevel'));
+            const anomalyPercentage5 = parseFloat(urlParams.get('anomalyPercentage'));
+            const distortionCoefficient5 = parseFloat(urlParams.get('distortionCoefficient'));
+            framesData = await fetchCustomHarmonicOscillating(numPoints5, numFrames5, d5, w05, noiseLevel5, anomalyPercentage5, distortionCoefficient5);
+            break;
+            
+        case '6':
             const dataRef = urlParams.get('dataRef');
             framesData = await fetchVideo(dataRef);
             break;

@@ -223,13 +223,13 @@
         <!-- Dropdown for Scenario Selection -->
         <select id="scenarioSelector">
             <option value="">Select a Scenario</option>
-            <option value="5">Upload a Video to Generate a Time Series Point Cloud</option>
+            <option value="6">Upload a Video to Generate a Time Series Point Cloud</option>
             <option value="1">Selected Dataset Visualization</option>
             <option value="2">Synthetic Dataset: Scaled Point Cloud with Defined Anomalies</option>
             <option value="3">Synthetic Dataset: Scaled Filled Sphere Point Cloud with Sinusoidal Wave</option>
             <option value="4">Synthetic Dataset: Scaled Hollow Sphere Point Cloud with Sinusoidal Wave</option>
+            <option value="5">Synthetic Dataset: Scaled Harmonic Oscillator Point Cloud with Anomalies</option>
         </select>
-
         <!-- Scenario Content will be injected here -->
         <div id="scenarioContent"></div>
     </div>
@@ -385,17 +385,53 @@
                 '5': `
                     <!-- Inputs for Scenario 5 -->
                     <div class="input-group">
-                        <label for="video">Video: </label>
-                        <input id="video" type="file" accept="video/*">
+                        <label for="numPoints5">Number of Points: </label>
+                        <input id="numPoints5" type="number" value="300">
                     </div>
                     <div class="input-group">
-                        <label for="numPoints5">Number of Points per Frame: </label>
-                        <input id="numPoints5" type="number" value="30">
+                        <label for="numFrames5">Number of Frames: </label>
+                        <input id="numFrames5" type="number" value="20">
+                    </div>
+                    <div class="input-group">
+                        <label for="d5">Damping Coefficient (d): </label>
+                        <input id="d5" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="w05">Natural Frequency (w0): </label>
+                        <input id="w05" type="number" value="1.0">
+                    </div>
+                    <div class="input-group">
+                        <label for="noiseLevel4">Noise Level: </label>
+                        <input id="noiseLevel4" type="number" value="0.05">
+                    </div>
+                    <div class="input-group">
+                        <label for="anomalyPercentage5">Anomaly Percentage: </label>
+                        <input id="anomalyPercentage5" type="number" value="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="distortionCoefficient5">Distortion Coefficient: </label>
+                        <input id="distortionCoefficient5" type="number" value="1.5">
                     </div>
 
                     <!-- Fetch Data Button -->
                     <div id="buttonContent">
-                        <button id="fetchDataButtonScenario5">Upload and Visualize</button>
+                        <button id="fetchDataButtonScenario5">Fetch Data</button>
+                    </div>
+                `,
+                '6': `
+                    <!-- Inputs for Scenario 6 -->
+                    <div class="input-group">
+                        <label for="video">Video: </label>
+                        <input id="video" type="file" accept="video/*">
+                    </div>
+                    <div class="input-group">
+                        <label for="numPoints6">Number of Points per Frame: </label>
+                        <input id="numPoints6" type="number" value="30">
+                    </div>
+
+                    <!-- Fetch Data Button -->
+                    <div id="buttonContent">
+                        <button id="fetchDataButtonScenario6">Upload and Visualize</button>
                     </div>
                 `
             };
@@ -474,7 +510,25 @@
             const fetchDataButton5 = container.querySelector('#fetchDataButtonScenario5');
             if (fetchDataButton5) {
                 fetchDataButton5.addEventListener('click', function() {
+                    // Fetch data logic for Scenario 5
                     const numPoints = document.getElementById('numPoints5').value;
+                    const numFrames = document.getElementById('numFrames5').value;
+                    const dampingCoefficient = document.getElementById('d5').value;
+                    const naturalFrequency = document.getElementById('w05').value;
+                    const noiseLevel = document.getElementById('noiseLevel4').value;
+                    const anomalyPercentage = document.getElementById('anomalyPercentage5').value;
+                    const distortionCoefficient = document.getElementById('distortionCoefficient5').value;
+
+                    // Redirect to visualization.html with query parameters
+                    window.location.href = `visualization.html?scenario=5&numPoints=${numPoints}&numFrames=${numFrames}&dampingCoefficient=${dampingCoefficient}&naturalFrequency=${naturalFrequency}&noiseLevel=${noiseLevel}&anomalyPercentage=${anomalyPercentage}&distortionCoefficient=${distortionCoefficient}`;
+                });
+            }
+
+            // Scenario 6
+            const fetchDataButton6 = container.querySelector('#fetchDataButtonScenario6');
+            if (fetchDataButton6) {
+                fetchDataButton6.addEventListener('click', function() {
+                    const numPoints = document.getElementById('numPoints6').value;
                     const video = document.getElementById('video').files[0];
                     const formData = new FormData();
                     formData.append("file", video);
@@ -492,7 +546,7 @@
                         // Redirect to visualization.html with data reference
                         const dataRef = data.data_id;
                         hideLoadingScreen();
-                        window.location.href = `visualization.html?scenario=5&dataRef=${dataRef}`;
+                        window.location.href = `visualization.html?scenario=6&dataRef=${dataRef}`;
                     })
                     .catch(error => {
                         console.error('Error:', error);
